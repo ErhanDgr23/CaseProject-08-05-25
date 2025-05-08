@@ -5,11 +5,6 @@ public class MyGrid : MonoBehaviour {
     public CarPart CurrentCarPart;
     public bool IsOccupied;
 
-    [HideInInspector] public MyGrid parent;
-    [HideInInspector] public float gCost;
-    [HideInInspector] public float hCost;
-    public float fCost => gCost + hCost;
-
     public Vector2 Position => new Vector2(transform.position.x, transform.position.z);
 
     private GridManager _gridManager;
@@ -38,8 +33,6 @@ public class MyGrid : MonoBehaviour {
 
     private void OnMouseUp()
     {
-
-
         SelectGrid(null);
     }
 

@@ -1,9 +1,8 @@
-﻿using UnityEngine.Rendering;
+﻿using System.Collections.Generic;
+using UnityEngine.Rendering;
 using UnityEngine;
 using System.Linq;
 using UniRx;
-using System.Collections.Generic;
-using System;
 
 public class GridManager : MonoBehaviour {
 
@@ -18,14 +17,9 @@ public class GridManager : MonoBehaviour {
 
     MyGrid[] debugPath;
 
-    CarPart _selectedCar;
-    Camera _camera;
-    Ray _ray;
-
     private void Awake()
     {
         GridManagerScript = this;
-        _camera = Camera.main;
 
         for (int i = 0; i < MyGridParents.childCount; i++)
             MyGridsList.Add(MyGridParents.GetChild(i).GetComponent<MyGrid>(), 
@@ -34,6 +28,30 @@ public class GridManager : MonoBehaviour {
         CurrentMouseSelectedMyGrid.Subscribe(OnMyGridChanged);
     }
 
+    public MyGrid FindMyGridWithPos(Vector2 _inputPos) => MyGridsList.FirstOrDefault(SelectedMyGrid => SelectedMyGrid.Value == _inputPos).Key;
+
+    void OnMyGridChanged(MyGrid grid)
+    {
+        if (grid == null)
+            return;
+
+        if (CurrentMouseSelectedCarPart == null)
+            CurrentMouseSelectedCarPart = grid.CurrentCarPart;
+
+        if (CurrentMouseSelectedCarPart == null || CurrentMouseSelectedCarPart.CurrentGrid == null)
+            return;
+
+        //print(CurrentMouseSelectedCarPart.CurrentGrid + "= StartGrid   " + CurrentMouseSelectedMyGrid.Value + "= EndGrid");
+        var path = CreatePath(CurrentMouseSelectedCarPart.CurrentGrid, CurrentMouseSelectedMyGrid.Value);
+
+        if (path != null)
+        {
+            CurrentMouseSelectedCarPart.StartPathMove(path);
+            SetDebugPath(path);
+        }
+    }
+
+    #region //PathFind
     public void SetDebugPath(MyGrid[] path)
     {
         debugPath = path;
@@ -51,79 +69,58 @@ public class GridManager : MonoBehaviour {
         }
     }
 
-    public MyGrid FindMyGridWithPos(Vector2 _inputPos) => MyGridsList.FirstOrDefault(SelectedMyGrid => SelectedMyGrid.Value == _inputPos).Key;
-
-    void OnMyGridChanged(MyGrid grid)
-    {
-        if (grid == null)
-            return;
-
-        if (CurrentMouseSelectedCarPart == null)
-            CurrentMouseSelectedCarPart = grid.CurrentCarPart;
-
-        if (CurrentMouseSelectedCarPart == null || CurrentMouseSelectedCarPart.CurrentGrid == null)
-            return;
-
-        print(CurrentMouseSelectedCarPart.CurrentGrid + "= StartGrid   " + CurrentMouseSelectedMyGrid.Value + "= EndGrid");
-        var path = CreatePath(CurrentMouseSelectedCarPart.CurrentGrid, CurrentMouseSelectedMyGrid.Value);
-
-        if (path != null)
-        {
-            CurrentMouseSelectedCarPart.StartPathMove(path);
-            SetDebugPath(path);
-        }
-    }
-
     public MyGrid[] CreatePath(MyGrid startGrid, MyGrid targetGrid)
     {
         print("Path Creating");
 
-        var openSet = new List<MyGrid> { startGrid };
-        var closedSet = new HashSet<MyGrid>();
+        Queue<MyGrid> queue = new Queue<MyGrid>();
+        Dictionary<MyGrid, MyGrid> cameFrom = new Dictionary<MyGrid, MyGrid>();
+        HashSet<MyGrid> visited = new HashSet<MyGrid>();
 
-        foreach (var kv in MyGridsList)
+        queue.Enqueue(startGrid);
+        visited.Add(startGrid);
+
+        while (queue.Count > 0)
         {
-            kv.Key.gCost = float.MaxValue;
-            kv.Key.parent = null;
-        }
+            var current = queue.Dequeue();
 
-        startGrid.gCost = 0;
-        startGrid.hCost = Vector2.Distance(startGrid.Position, targetGrid.Position);
-
-        while (openSet.Count > 0)
-        {
-            var currentGrid = openSet.OrderBy(n => n.fCost).ThenBy(n => n.hCost).First();
-
-            if (currentGrid == targetGrid)
-                return RetracePath(startGrid, targetGrid);
-
-            openSet.Remove(currentGrid);
-            closedSet.Add(currentGrid);
-
-            foreach (var neighbor in GetNeighbors(currentGrid))
+            if (current == targetGrid)
             {
-                if (neighbor == null || neighbor.IsOccupied || closedSet.Contains(neighbor))
+                return RetracePath(startGrid, targetGrid, cameFrom);
+            }
+
+            foreach (var neighbor in GetSortedNeighborsByTarget(current, targetGrid))
+            {
+                if (neighbor == null || neighbor.IsOccupied || visited.Contains(neighbor))
                     continue;
 
-                float newGCost = currentGrid.gCost + Vector2.Distance(currentGrid.Position, neighbor.Position);
-                if (newGCost < neighbor.gCost)
-                {
-                    neighbor.gCost = newGCost;
-                    neighbor.hCost = Vector2.Distance(neighbor.Position, targetGrid.Position);
-                    neighbor.parent = currentGrid;
-
-                    if (!openSet.Contains(neighbor))
-                        openSet.Add(neighbor);
-                }
+                visited.Add(neighbor);
+                cameFrom[neighbor] = current;
+                queue.Enqueue(neighbor);
             }
         }
 
         return null;
     }
 
-    List<MyGrid> GetNeighbors(MyGrid grid)
+    MyGrid[] RetracePath(MyGrid start, MyGrid end, Dictionary<MyGrid, MyGrid> cameFrom)
     {
-        List<MyGrid> neighbors = new List<MyGrid>();
+        List<MyGrid> path = new List<MyGrid>();
+        MyGrid current = end;
+
+        while (current != start)
+        {
+            path.Add(current);
+            current = cameFrom[current];
+        }
+
+        path.Reverse();
+        return path.ToArray();
+    }
+
+    List<MyGrid> GetSortedNeighborsByTarget(MyGrid current, MyGrid target)
+    {
+        List<(MyGrid grid, float distance)> neighbors = new List<(MyGrid, float)>();
 
         Vector2[] directions = new Vector2[]
         {
@@ -133,31 +130,21 @@ public class GridManager : MonoBehaviour {
         Vector2.right
         };
 
-        foreach (Vector2 dir in directions)
+        foreach (var dir in directions)
         {
-            Vector2 neighborPos = grid.Position + dir;
-            MyGrid neighbor = FindMyGridWithPos(neighborPos);
+            Vector2 checkPos = current.Position + dir;
+            MyGrid neighbor = FindMyGridWithPos(checkPos);
+
             if (neighbor != null)
-                neighbors.Add(neighbor);
+            {
+                float distToTarget = Vector2.Distance(neighbor.Position, target.Position);
+                neighbors.Add((neighbor, distToTarget));
+            }
         }
 
-        return neighbors;
+        return neighbors.OrderBy(n => n.distance).Select(n => n.grid).ToList();
     }
-
-    MyGrid[] RetracePath(MyGrid startGrid, MyGrid endGrid)
-    {
-        List<MyGrid> path = new List<MyGrid>();
-        MyGrid current = endGrid;
-
-        while (current != startGrid)
-        {
-            path.Add(current);
-            current = current.parent;
-        }
-
-        path.Reverse();
-        return path.ToArray();
-    }
+    #endregion
 
     void Update()
     {
