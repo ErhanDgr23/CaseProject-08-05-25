@@ -141,7 +141,7 @@ namespace _project.Car
                 CurrentGrid = null;
             }
 
-            Vector3 targetDirection = _gridManager.CurrentMouseSelectedCarPart.IsTail == true ? (transform.position - grid.transform.position) : (grid.transform.position - transform.position);
+            Vector3 targetDirection = _gridManager.CurrentMouseSelectedCarPart.Value.IsTail == true ? (transform.position - grid.transform.position) : (grid.transform.position - transform.position);
             targetDirection.y = 0f;
 
             if (targetDirection != Vector3.zero)

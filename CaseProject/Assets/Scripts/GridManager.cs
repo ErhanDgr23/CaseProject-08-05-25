@@ -15,7 +15,7 @@ namespace _project.Grid
         private Dictionary<Vector2Int, MyGrid> _gridLookup;
 
         /*[HideInInspector]*/ public ReactiveProperty<MyGrid> CurrentMouseSelectedMyGrid;
-        /*[HideInInspector]*/ public CarPart CurrentMouseSelectedCarPart;
+        /*[HideInInspector]*/ public ReactiveProperty<CarPart> CurrentMouseSelectedCarPart;
 
         [SerializeField] Transform MyGridParents;
 
@@ -60,18 +60,18 @@ namespace _project.Grid
             if (grid == null)
                 return;
 
-            if (CurrentMouseSelectedCarPart == null)
-                CurrentMouseSelectedCarPart = grid.CurrentCarPartt;
+            if (CurrentMouseSelectedCarPart.Value == null)
+                CurrentMouseSelectedCarPart.Value = grid.CurrentCarPartt;
 
-            if (CurrentMouseSelectedCarPart == null || CurrentMouseSelectedCarPart.CurrentGrid == null)
+            if (CurrentMouseSelectedCarPart.Value == null || CurrentMouseSelectedCarPart.Value.CurrentGrid == null)
                 return;
 
             //print(CurrentMouseSelectedCarPart.CurrentGrid + "= StartGrid   " + CurrentMouseSelectedMyGrid.Value + "= EndGrid");
-            var path = CreatePath(CurrentMouseSelectedCarPart.CurrentGrid, CurrentMouseSelectedMyGrid.Value);
+            var path = CreatePath(CurrentMouseSelectedCarPart.Value.CurrentGrid, CurrentMouseSelectedMyGrid.Value);
 
             if (path != null)
             {
-                CurrentMouseSelectedCarPart.StartPathMove(path);
+                CurrentMouseSelectedCarPart.Value.StartPathMove(path);
                 SetDebugPath(path);
             }
         }
@@ -154,8 +154,8 @@ namespace _project.Grid
 
         void Update()
         {
-            if (Input.GetMouseButtonUp(0) && CurrentMouseSelectedCarPart != null)
-                CurrentMouseSelectedCarPart = null;
+            if (Input.GetMouseButtonUp(0) && CurrentMouseSelectedCarPart.Value != null)
+                CurrentMouseSelectedCarPart.Value = null;
         }
     }
 }

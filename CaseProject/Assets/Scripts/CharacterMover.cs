@@ -3,25 +3,24 @@ using UnityEngine;
 
 public class CharacterMover : MonoBehaviour
 {
-    public Transform target;
+    public Vector3 target;
 
     CharacterSc _character;
 
     private void Start()
     {
         _character = GetComponent<CharacterSc>();
-        enabled = false;
     }
 
     void LateUpdate()
     {
-        if (target == null)
+        if (target == Vector3.zero)
             return;
             
-        transform.position = Vector3.MoveTowards(transform.position, target.position, 2f * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, target, 2f * Time.deltaTime);
 
-        float dist = Vector3.Distance(transform.position, target.position);
-        if (dist < 1f)
+        float dist = Vector3.Distance(transform.position, target);
+        if (dist < 0.025f)
             _character.StopMove();
     }
 }

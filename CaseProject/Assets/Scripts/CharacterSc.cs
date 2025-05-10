@@ -1,7 +1,7 @@
 using _project.Settings;
 using _project.Enums;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
+using DG.Tweening;
 
 namespace _project.Character
 {
@@ -10,6 +10,7 @@ namespace _project.Character
         public ColorEnum MyColor;
 
         Transform _childMeshRendererTr;
+
         CharacterMover _mover;
         SettingSO _settingSO;
         Animator _animator;
@@ -18,6 +19,8 @@ namespace _project.Character
         {
             _mover = GetComponent<CharacterMover>();
             _animator = GetComponent<Animator>();
+
+            _mover.enabled = false;
         }
 
         public void ChangeColor(ColorEnum color)
@@ -28,18 +31,28 @@ namespace _project.Character
             MyColor = color;
         }
 
-        public void MovePos(Transform target)
+        public void MovePos(Vector3 target)
         {
             _mover.enabled = true;
             _mover.target = target;
             _animator.SetBool("Run", true);
         }
 
+        public void Jump(Transform JumpPos)
+        {
+            if (JumpPos != null)
+            {
+                transform.DOJump(JumpPos.position, 2f, 0, 0.65f).OnComplete(() => { _animator.Play("SitIdle"); transform.SetParent(JumpPos); });
+                transform.DORotate(JumpPos.eulerAngles, 0.5f);
+                _animator.Play("Jump");
+            }
+        }
+
         public void StopMove()
         {
-            _mover.target = null;
-            _mover.enabled = false;
             _animator.SetBool("Run", false);
+            _mover.target = Vector3.zero;
+            _mover.enabled = false;
         }
     }
 }
