@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using _project.Character;
 using _project.Settings;
 using _project.Enums;
@@ -7,7 +8,6 @@ using _project.Car;
 using UnityEngine;
 using System;
 using UniRx;
-using System.Collections;
 
 namespace _project.Ladder
 {
@@ -29,7 +29,9 @@ namespace _project.Ladder
         CarCountainer _carAllParts;
         Transform _lineStartTr;
         CarPart _carPart;
-        int repeattime;
+
+        int _passengerWillAddVal;
+        bool _isPassengerLoading;
 
         GridManager _gridManager;
         SettingSO _settingSO;
@@ -96,7 +98,10 @@ namespace _project.Ladder
 
         void CarIsCamed(CarPart carPart)
         {
-            if (carPart == null)
+            print(carPart.transform.parent + " CamingCar");
+            print(this);
+
+            if (carPart == null || _isPassengerLoading)
                 return;
 
             _carAllParts = carPart.transform.parent.GetComponent<CarCountainer>();
@@ -108,9 +113,10 @@ namespace _project.Ladder
                 foreach (var item in _carAllParts.AllPart)
                     item.StopTheCar();
 
-                repeattime = 0;
+                _passengerWillAddVal = 0;
                 CancelInvoke("RepeatingDecereaseHuman");
                 InvokeRepeating("RepeatingDecereaseHuman", 0f, 1f);
+                _isPassengerLoading = true;
             }
         }
 
@@ -123,37 +129,43 @@ namespace _project.Ladder
             }
         }
 
-        IEnumerator CarMoveUnlocke()
+        IEnumerator CarMoveUnlocke(CarCountainer CarAllPart)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
 
             ResetPassengers();
             UpdateColorWithFirstHuman();
 
-            foreach (var item in _carAllParts.AllPart)
+            foreach (var item in CarAllPart.AllPart)
                 item.IsStopped = false;
 
+            _isPassengerLoading = false;
             _carPart = null;
         }
 
         void RepeatingDecereaseHuman()
         {
-            repeattime++;
+            _passengerWillAddVal++;
+            _carAllParts = _carPart.transform.parent.GetComponent<CarCountainer>();
 
-            if (Humans[0].HowManyH <= repeattime)
+            if (Humans[0].HowManyH == _passengerWillAddVal)
             {
-                StopCoroutine(CarMoveUnlocke());
-                StartCoroutine(CarMoveUnlocke());
+                StopCoroutine(CarMoveUnlocke(_carAllParts));
+                StartCoroutine(CarMoveUnlocke(_carAllParts));
 
                 Humans.Remove(Humans[0]);
                 CancelInvoke("RepeatingDecereaseHuman");
             }
 
-            CharacterSc CloneChar = HumanList[0];
-            CloneChar.Jump(_carAllParts.SeatPos[repeattime - 1]);
-            HumanList.Remove(CloneChar);
+            if(HumanList.Count > 0 && _carAllParts.SeatPos.Length >= _carAllParts.AllPassengerValue)
+            {
+                CharacterSc CloneChar = HumanList[0];
+                CloneChar.Jump(_carAllParts.SeatPos[_carAllParts.AllPassengerValue]);
+                HumanList.Remove(CloneChar);
+                _carAllParts.AllPassengerValue++;
+            }
 
-            print("HumanDecreased " + repeattime + "   " + Humans[0].HowManyH);
+            //print("HumanDecreased " + repeattime + "   " + Humans[0].HowManyH);
         }
     }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CarCountainer : MonoBehaviour
 {
-    public int AllPassengerValue;
+    public int AllPassengerValue, MaxPassengerVal;
     public Transform[] SeatPos;
     public CarPart[] AllPart;
 
@@ -13,6 +13,7 @@ public class CarCountainer : MonoBehaviour
         foreach (var part in AllPart)
             seatCount += part.transform.childCount;
 
+        MaxPassengerVal = seatCount;
         SeatPos = new Transform[seatCount];
 
         int seatIndex = 0;

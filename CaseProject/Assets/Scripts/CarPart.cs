@@ -21,7 +21,6 @@ namespace _project.Car
 
         [Space(50)]
         [Header("Oto Full")]
-        /*[HideInInspector]*/ public int CurrentPassengerVal;
         /*[HideInInspector]*/ public int MaxPassengerVal;
         /*[HideInInspector]*/ public MyGrid CurrentGrid;
         /*[HideInInspector]*/ public MyGrid TargetGrid;
@@ -172,7 +171,6 @@ namespace _project.Car
 
         public void StopTheCar()
         {
-            StopCoroutine(WaitMove());
             _pathGrid.Clear();
             TargetGrid = null;
             IsStopped = true;
