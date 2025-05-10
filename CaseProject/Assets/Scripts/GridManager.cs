@@ -8,7 +8,6 @@ namespace _project.Grid
 {
     public class GridManager : MonoBehaviour
     {
-
         public static GridManager GridManagerScript;
 
         // public SerializedDictionary<MyGrid, Vector2> MyGridsList;
@@ -62,7 +61,7 @@ namespace _project.Grid
                 return;
 
             if (CurrentMouseSelectedCarPart == null)
-                CurrentMouseSelectedCarPart = grid.CurrentCarPart;
+                CurrentMouseSelectedCarPart = grid.CurrentCarPartt;
 
             if (CurrentMouseSelectedCarPart == null || CurrentMouseSelectedCarPart.CurrentGrid == null)
                 return;
