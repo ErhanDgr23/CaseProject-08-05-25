@@ -33,6 +33,7 @@ namespace _project.Car
 
         private void Awake()
         {
+            transform.parent.GetComponent<CarCountainer>().PassengersFulled += DestroyAnim;
             //TargetGrid.Subscribe(TargetMyGridIsChanged);
         }
 
@@ -167,6 +168,20 @@ namespace _project.Car
         public void ColorChanged(ColorEnum color)
         {
             MyColor = color;
+        }
+
+        public void DestroyAnim()
+        {
+            CancelInvoke("DestroyInvoke");
+            Invoke("DestroyInvoke", 0.3f);
+        }
+
+        void DestroyInvoke()
+        {
+            transform.DOKill(complete: false);
+            transform.DOScale(Vector3.zero, 0.4f);
+            CurrentGrid.CurrentCarPartt = null;
+            CurrentGrid.IsOccupied = false;
         }
 
         public void StopTheCar()

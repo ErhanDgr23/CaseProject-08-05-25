@@ -98,6 +98,9 @@ namespace _project.Ladder
 
         void CarIsCamed(CarPart carPart)
         {
+            if (Humans.Count <= 0)
+                return;
+
             print(carPart.transform.parent + " CamingCar");
             print(this);
 
@@ -148,7 +151,7 @@ namespace _project.Ladder
             _passengerWillAddVal++;
             _carAllParts = _carPart.transform.parent.GetComponent<CarCountainer>();
 
-            if (Humans[0].HowManyH == _passengerWillAddVal)
+            if (Humans.Count > 0 && Humans[0].HowManyH == _passengerWillAddVal)
             {
                 StopCoroutine(CarMoveUnlocke(_carAllParts));
                 StartCoroutine(CarMoveUnlocke(_carAllParts));
@@ -157,12 +160,12 @@ namespace _project.Ladder
                 CancelInvoke("RepeatingDecereaseHuman");
             }
 
-            if(HumanList.Count > 0 && _carAllParts.SeatPos.Length >= _carAllParts.AllPassengerValue)
+            if(HumanList.Count > 0 && _carAllParts.SeatPos.Length >= _carAllParts.AllPassengerValue.Value)
             {
                 CharacterSc CloneChar = HumanList[0];
-                CloneChar.Jump(_carAllParts.SeatPos[_carAllParts.AllPassengerValue]);
+                CloneChar.Jump(_carAllParts.SeatPos[_carAllParts.AllPassengerValue.Value]);
                 HumanList.Remove(CloneChar);
-                _carAllParts.AllPassengerValue++;
+                _carAllParts.AllPassengerValue.Value++;
             }
 
             //print("HumanDecreased " + repeattime + "   " + Humans[0].HowManyH);

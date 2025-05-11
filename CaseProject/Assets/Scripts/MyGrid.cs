@@ -27,7 +27,7 @@ namespace _project.Grid
 
         public Vector2 Position => new Vector2(transform.position.x, transform.position.z);
 
-        private CarPart _currentCarPartt;
+        [SerializeField] private CarPart _currentCarPartt;
         private GridManager _gridManager;
 
         private void Start()
