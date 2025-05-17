@@ -29,7 +29,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 684164472721255571}
+  m_Father: {fileID: 7674877094252635493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3470441406211860063
 GameObject:
@@ -60,7 +60,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 684164472721255571}
+  m_Father: {fileID: 7674877094252635493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6288099659382241210
 GameObject:
@@ -91,7 +91,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 684164472721255571}
+  m_Father: {fileID: 7674877094252635493}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6764652575677804844
 GameObject:
@@ -122,6 +122,41 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
+  m_Father: {fileID: 7674877094252635493}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8839553975318281056
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7674877094252635493}
+  m_Layer: 0
+  m_Name: SeatPoses
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7674877094252635493
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8839553975318281056}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1663030734645233437}
+  - {fileID: 7493894799644287283}
+  - {fileID: 1662466877777627001}
+  - {fileID: 6777015234936639808}
   m_Father: {fileID: 684164472721255571}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1077515399224052600
@@ -189,16 +224,7 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a44415c64ac4734fa6fcba07ece350d, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1663030734645233437}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a44415c64ac4734fa6fcba07ece350d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 7493894799644287283}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a44415c64ac4734fa6fcba07ece350d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1662466877777627001}
-    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 5a44415c64ac4734fa6fcba07ece350d, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 6777015234936639808}
+      addedObject: {fileID: 7674877094252635493}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 5a44415c64ac4734fa6fcba07ece350d, type: 3}
       insertIndex: -1
@@ -227,7 +253,8 @@ MonoBehaviour:
   MyColor: 4
   MyType: 2
   Followers: []
-  CurrentPassengerVal: 0
+  LookFrontObj: {fileID: 0}
+  LookBakObj: {fileID: 0}
   MaxPassengerVal: 0
   CurrentGrid: {fileID: 0}
   TargetGrid: {fileID: 0}

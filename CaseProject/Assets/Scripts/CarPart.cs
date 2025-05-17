@@ -8,6 +8,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Linq;
 using UniRx;
+using UnityEngine.UIElements;
 
 namespace _project.Car
 {
@@ -21,6 +22,8 @@ namespace _project.Car
 
         [Space(50)]
         [Header("Oto Full")]
+        /*[HideInInspector]*/ public Transform LookFrontObj;
+        /*[HideInInspector]*/ public Transform LookBakObj;
         /*[HideInInspector]*/ public int MaxPassengerVal;
         /*[HideInInspector]*/ public MyGrid CurrentGrid;
         /*[HideInInspector]*/ public MyGrid TargetGrid;
@@ -141,8 +144,9 @@ namespace _project.Car
                 CurrentGrid = null;
             }
 
-            Vector3 targetDirection = _gridManager.CurrentMouseSelectedCarPart.Value.IsTail == true ? (transform.position - grid.transform.position) : (grid.transform.position - transform.position);
-            targetDirection.y = 0f;
+            Vector3 targetDirection = Vector3.zero;
+            targetDirection = _gridManager.CurrentMouseSelectedCarPart.Value.IsTail == true ?
+(transform.position - grid.transform.position) : (grid.transform.position - transform.position);
 
             if (targetDirection != Vector3.zero)
             {
@@ -163,6 +167,22 @@ namespace _project.Car
                 if (!IsStopped && _pathGrid.Count > 0)
                     MovingPath();
             });
+        }
+
+        private void LateUpdate()
+        {
+            if (_gridManager.CurrentMouseSelectedCarPart.Value == null)
+                return;
+
+            if (IsHead || IsTail)
+                return;
+
+            if (LookBakObj != null && _gridManager.CurrentMouseSelectedCarPart.Value.IsTail)
+                transform.GetChild(0).transform.rotation = Quaternion.LookRotation(transform.GetChild(0).transform.position - LookBakObj.position);
+            else if (LookFrontObj != null && !_gridManager.CurrentMouseSelectedCarPart.Value.IsTail)
+                transform.GetChild(0).transform.rotation = Quaternion.LookRotation(LookFrontObj.position - transform.GetChild(0).transform.position);
+            else
+                transform.GetChild(0).transform.eulerAngles = Vector3.zero;
         }
 
         public void ColorChanged(ColorEnum color)

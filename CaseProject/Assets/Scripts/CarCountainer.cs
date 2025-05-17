@@ -26,7 +26,7 @@ public class CarCountainer : MonoBehaviour
 
         int seatCount = 0;
         foreach (var part in AllPart)
-            seatCount += part.transform.childCount;
+            seatCount += part.transform.GetChild(0).childCount;
 
         MaxPassengerVal = seatCount;
         SeatPos = new Transform[seatCount];
@@ -34,9 +34,9 @@ public class CarCountainer : MonoBehaviour
         int seatIndex = 0;
         foreach (var part in AllPart)
         {
-            for (int i = 0; i < part.transform.childCount; i++)
+            for (int i = 0; i < part.transform.GetChild(0).childCount; i++)
             {
-                SeatPos[seatIndex] = part.transform.GetChild(i);
+                SeatPos[seatIndex] = part.transform.GetChild(0).GetChild(i);
                 seatIndex++;
             }
         }
