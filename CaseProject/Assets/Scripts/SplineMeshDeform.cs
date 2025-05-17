@@ -3,6 +3,7 @@ using _project.Grid;
 using SplineMesh;
 using UnityEngine;
 using UniRx;
+using DG.Tweening;
 
 [RequireComponent(typeof(Spline))]
 public class SplineMeshDeform : MonoBehaviour
@@ -47,6 +48,7 @@ public class SplineMeshDeform : MonoBehaviour
         _tilling = GetComponent<SplineMeshTiling>();
         _spline = GetComponent<Spline>();
 
+        _carCountainer.DeformMesh.Add(this);
         _gridManager.CurrentMouseSelectedCarPart.Subscribe(CheckSelect);
 
         // 1) Mevcut node'ları temizle, iki yeni placeholder ekle
@@ -75,6 +77,13 @@ public class SplineMeshDeform : MonoBehaviour
                 break;
             }
         }
+    }
+
+    public void BecameNull()
+    {
+        _tilling.enabled = false;
+        transform.GetChild(0).gameObject.SetActive(false);
+        this.enabled = false;
     }
 
     void LateUpdate()

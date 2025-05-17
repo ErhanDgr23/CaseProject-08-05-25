@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using UniRx;
+using System.Collections.Generic;
 
 public class CarCountainer : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class CarCountainer : MonoBehaviour
 
     public ReactiveProperty<int> AllPassengerValue;
     public int MaxPassengerVal;
+
+    public List<SplineMeshDeform> DeformMesh = new List<SplineMeshDeform>();
     public Transform[] SeatPos;
     public CarPart[] AllPart;
 
@@ -54,6 +57,12 @@ public class CarCountainer : MonoBehaviour
 
         if(AllPassengerValue.Value >= MaxPassengerVal)
         {
+            foreach (var item in DeformMesh)
+                item.BecameNull();
+
+            foreach (var item in AllPart)
+                item.gameObject.SetActive(true);
+
             PassengersFulled?.Invoke();
             CancelInvoke("DestroyInvoke");
             Invoke("DestroyInvoke", 1.25f);
